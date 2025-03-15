@@ -1,0 +1,62 @@
+.signup-page {
+    height: 100vh;
+    margin: 0 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.signup-page .container {
+    border: 1px solid gray;
+    border-radius: 5px;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px;
+}
+
+.signup-page .container .container-header p {
+    color: rgb(92, 92, 92);
+}
+
+.signup-page .container .input-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.signup-page .container .input-container input {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+.signup-page .container .input-container p {
+    font-size: 12px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.signup-page .container .input-container button {
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-weight: 500;
+    background-color: rgb(48, 48, 48);
+    cursor: pointer;
+    color: white;
+}
+
+.signup-page .container .input-container button:hover {
+    background-color: rgb(85, 85, 85);
+}
+
+.signup-page .login-redirect {
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 20px;
+    width: 500px;
+}

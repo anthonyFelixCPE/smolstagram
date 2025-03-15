@@ -1,0 +1,17 @@
+Database Collections: 
+Users
+    firstName
+    lastName
+    email
+    displayPhoto
+    status
+    lastSeen
+
+
+Notes:
+Add show password on password fields
+Add Delivered/Seen status at the end of each 
+Add forgot password page and function
+Determine last message if received or sent (you + message)
+First previewed conversation should be the latest unread message
+
