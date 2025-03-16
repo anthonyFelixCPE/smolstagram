@@ -21,15 +21,18 @@ import {
     serverTimestamp,
     updateDoc,
 } from "firebase/firestore";
+import useDropdown from "../utils/useDropdown";
+import useAutoScroll from "../utils/useAutoScroll";
+import useAutoResizeTextarea from "../utils/useAutoResizeTextarea";
+import handleLogout from "../utils/handleLogout";
 
 function Messenger() {
+    const { isDropdownOpen, handleToggleDropdown, dropdownRef } = useDropdown();
+
     const [selectedTab, setSelectedTab] = useState("chats-opt");
     const [message, setMessage] = useState("");
     const textareaRef = useRef(null);
     const chatBoxRef = useRef(null);
-
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
 
     const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
@@ -40,46 +43,8 @@ function Messenger() {
     const [messages, setMessages] = useState([]);
 
     const [otherUserInfo, setOtherUserInfo] = useState(null);
-
-    useEffect(() => {
-        if (chatBoxRef.current) {
-            chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-        }
-    }, [messages]);
-
-    // Adjust textarea height dynamically
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = "auto"; // Reset height
-            let newHeight = Math.min(
-                textareaRef.current.scrollHeight,
-                window.innerHeight * 0.2
-            ); // Limit to 20vh
-            textareaRef.current.style.height = `${newHeight}px`;
-        }
-    }, [message]);
-
-    // Toggle dropdown when clicking on dp-container
-    const handleToggleDropdown = () => {
-        setIsDropdownOpen((prev) => !prev);
-    };
-
-    // Close dropdown if clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
-            ) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener("click", handleClickOutside);
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, []);
+    useAutoScroll(chatBoxRef, messages);
+    useAutoResizeTextarea(textareaRef, message);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -95,25 +60,6 @@ function Messenger() {
             navigate("/login");
         }
     }, [navigate]);
-
-    const handleLogout = async () => {
-        if (userData) {
-            console.log(
-                `Logging out: ${userData.uid} - ${userData.firstName} ${userData.lastName}`
-            );
-        }
-        await signOut(auth);
-
-        // Debugging print to confirm logout
-        console.log(
-            "Current logged-in user:",
-            auth.currentUser?.uid || "No user logged in"
-        );
-
-        localStorage.removeItem("user");
-        setUserData(null);
-        navigate("/login");
-    };
 
     useEffect(() => {
         if (!userData) return;
@@ -269,7 +215,13 @@ function Messenger() {
                         style={{ display: isDropdownOpen ? "block" : "none" }}
                     >
                         <li>Profile</li>
-                        <li onClick={handleLogout}>Logout</li>
+                        <li
+                            onClick={() =>
+                                handleLogout(userData, navigate, setUserData)
+                            }
+                        >
+                            Logout
+                        </li>
                     </ul>
                     <h3 className="loggedIn-userName">
                         {userData
