@@ -4,9 +4,8 @@ import DisplayPicture from "../images/profilePic.jpg";
 import { IoSearchOutline } from "react-icons/io5";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import { FiSend } from "react-icons/fi";
+import { IoCloseCircle } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../config/firebase";
-import { signOut } from "firebase/auth";
 import { db } from "../config/firebase";
 import {
     collection,
@@ -25,6 +24,7 @@ import useDropdown from "../utils/useDropdown";
 import useAutoScroll from "../utils/useAutoScroll";
 import useAutoResizeTextarea from "../utils/useAutoResizeTextarea";
 import handleLogout from "../utils/handleLogout";
+import ExampleImage from "../images/profilePic.jpg";
 
 function Messenger() {
     const { isDropdownOpen, handleToggleDropdown, dropdownRef } = useDropdown();
@@ -351,6 +351,12 @@ function Messenger() {
                             </div>
                         </div>
                     ))}
+                </div>
+                <div className="photoPreview-container">
+                    <div className="image-container">
+                        <IoCloseCircle className="removeImage-Icon"/>
+                        <img src={ExampleImage} />
+                    </div>
                 </div>
                 <div className="send-message-control">
                     <HiOutlinePhotograph className="icon" />
