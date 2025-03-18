@@ -24,7 +24,7 @@ import useDropdown from "../utils/useDropdown";
 import useAutoScroll from "../utils/useAutoScroll";
 import useAutoResizeTextarea from "../utils/useAutoResizeTextarea";
 import handleLogout from "../utils/handleLogout";
-import ExampleImage from "../images/profilePic.jpg";
+import handleImageUpload from "../utils/handleImageUpload";
 
 function Messenger() {
     const { isDropdownOpen, handleToggleDropdown, dropdownRef } = useDropdown();
@@ -442,7 +442,13 @@ function Messenger() {
                             type="file"
                             accept="image/jpeg, image/png"
                             multiple
-                            onChange={handleImageUpload}
+                            onChange={(event) =>
+                                handleImageUpload(
+                                    event,
+                                    setSelectedImages,
+                                    selectedImages
+                                )
+                            }
                             id="imageInput"
                             style={{ display: "none" }}
                         />
