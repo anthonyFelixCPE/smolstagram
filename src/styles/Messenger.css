@@ -64,7 +64,6 @@
     background-color: rgb(230, 230, 230);
 }
 
-
 .messenger-page .side-bar .searchbar-container {
     border: 1px solid gray;
     border-radius: 5px;
@@ -293,23 +292,26 @@
     border-radius: 50%;
 }
 
+.messenger-page .main-content .chat-box .message .sent-image {
+    max-width: 200px;
+    border-radius: 5px;
+}
+
 .messenger-page .main-content .photoPreview-container {
     width: 100%;
-    padding: 10px;
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     max-height: 250px;
     overflow-y: auto;
-    border-top: 1px solid rgb(200, 200, 200);
-    box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
 }
 
 .messenger-page .main-content .photoPreview-container .image-container {
     min-width: 100px;
     max-width: 100px;
     width: 100px;
-    height: 100px;
+    max-height: 100px;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
@@ -324,7 +326,11 @@
     border-radius: 10px;
 }
 
-.messenger-page .main-content .photoPreview-container .image-container .removeImage-Icon {
+.messenger-page
+    .main-content
+    .photoPreview-container
+    .image-container
+    .removeImage-Icon {
     position: absolute;
     right: 2px;
     top: 2px;
@@ -332,7 +338,11 @@
     font-size: 20px;
 }
 
-.messenger-page .main-content .photoPreview-container .image-container .removeImage-Icon:hover {
+.messenger-page
+    .main-content
+    .photoPreview-container
+    .image-container
+    .removeImage-Icon:hover {
     transform: scale(1.05);
 }
 

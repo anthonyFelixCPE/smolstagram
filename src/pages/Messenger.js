@@ -46,6 +46,38 @@ function Messenger() {
     useAutoScroll(chatBoxRef, messages);
     useAutoResizeTextarea(textareaRef, message);
 
+    const [selectedImages, setSelectedImages] = useState([]);
+
+    const handleImageUpload = (event) => {
+        const files = event.target.files;
+        if (files.length > 0) {
+            const imagesArray = [];
+            let oversizedFiles = false;
+
+            Array.from(files).forEach((file) => {
+                if (file.size > 1024 * 1024) {
+                    oversizedFiles = true;
+                } else if (
+                    file.type === "image/jpeg" ||
+                    file.type === "image/png"
+                ) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        imagesArray.push(reader.result);
+                        setSelectedImages([...selectedImages, ...imagesArray]);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            if (oversizedFiles) {
+                alert(
+                    "One or more images exceed 1MB and will not be uploaded."
+                );
+            }
+        }
+    };
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -151,13 +183,17 @@ function Messenger() {
     }, [selectedConversation, userData]);
 
     const handleSendMessage = async () => {
-        if (!message.trim() || !selectedConversation || !userData) return;
+        if (
+            (!message.trim() && selectedImages.length === 0) ||
+            !selectedConversation ||
+            !userData
+        )
+            return;
 
         const senderID = userData.uid;
         const conversationRef = doc(db, "conversations", selectedConversation);
 
         try {
-            // Fetch conversation details to determine receiverID
             const conversationSnap = await getDoc(conversationRef);
             if (!conversationSnap.exists()) return;
 
@@ -166,26 +202,42 @@ function Messenger() {
                 (uid) => uid !== senderID
             );
 
-            // Reference to messages subcollection
             const messagesRef = collection(conversationRef, "messages");
 
-            // Add message to Firestore
-            await addDoc(messagesRef, {
-                message: message.trim(),
-                senderID,
-                receiverID,
-                timestamp: serverTimestamp(),
-                status: "sent",
-            });
+            // Send message text if available
+            if (message.trim()) {
+                await addDoc(messagesRef, {
+                    message: message.trim(),
+                    senderID,
+                    receiverID,
+                    timestamp: serverTimestamp(),
+                    status: "sent",
+                    type: "text",
+                });
+            }
 
-            // Update conversation with last message details
+            // Send images if available
+            for (const image of selectedImages) {
+                await addDoc(messagesRef, {
+                    message: image, // Storing Base64 string
+                    senderID,
+                    receiverID,
+                    timestamp: serverTimestamp(),
+                    status: "sent",
+                    type: "image",
+                });
+            }
+
+            // Update last message
             await updateDoc(conversationRef, {
-                lastMessage: message.trim(),
+                lastMessage:
+                    selectedImages.length > 0 ? "[Image]" : message.trim(),
                 lastMessageSender: senderID,
                 lastMessageTimestamp: serverTimestamp(),
             });
 
-            setMessage(""); // Clear input field
+            setMessage(""); // Clear text input
+            setSelectedImages([]); // Clear selected images
         } catch (error) {
             console.error("Error sending message:", error);
         }
@@ -336,7 +388,17 @@ function Messenger() {
                                 />
                             </div>
                             <div className="message-content">
-                                <p className="message-text">{msg.message}</p>
+                                {msg.type === "image" ? (
+                                    <img
+                                        src={msg.message}
+                                        alt="Sent Image"
+                                        className="sent-image"
+                                    />
+                                ) : (
+                                    <p className="message-text">
+                                        {msg.message}
+                                    </p>
+                                )}
                                 <p className="time-sent">
                                     {msg.timestamp
                                         ? new Date(
@@ -352,23 +414,54 @@ function Messenger() {
                         </div>
                     ))}
                 </div>
-                <div className="photoPreview-container">
-                    <div className="image-container">
-                        <IoCloseCircle className="removeImage-Icon"/>
-                        <img src={ExampleImage} />
+                <div
+                    className="photoPreview-container"
+                    style={{
+                        display: selectedImages.length > 0 ? "flex" : "none",
+                    }}
+                >
+                    {selectedImages.map((image, index) => (
+                        <div key={index} className="image-container">
+                            <IoCloseCircle
+                                className="removeImage-Icon"
+                                onClick={() => {
+                                    setSelectedImages(
+                                        selectedImages.filter(
+                                            (_, i) => i !== index
+                                        )
+                                    );
+                                }}
+                            />
+                            <img src={image} alt="Selected Preview" />
+                        </div>
+                    ))}
+                </div>
+                {selectedConversation && (
+                    <div className="send-message-control">
+                        <input
+                            type="file"
+                            accept="image/jpeg, image/png"
+                            multiple
+                            onChange={handleImageUpload}
+                            id="imageInput"
+                            style={{ display: "none" }}
+                        />
+                        <HiOutlinePhotograph
+                            className="icon"
+                            onClick={() =>
+                                document.getElementById("imageInput").click()
+                            }
+                        />
+                        <textarea
+                            ref={textareaRef}
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder="Type a message..."
+                        ></textarea>
+                        <FiSend className="icon" onClick={handleSendMessage} />
                     </div>
-                </div>
-                <div className="send-message-control">
-                    <HiOutlinePhotograph className="icon" />
-                    <textarea
-                        ref={textareaRef}
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={handleKeyPress} // Allow Enter key to send
-                        placeholder="Type a message..."
-                    ></textarea>
-                    <FiSend className="icon" onClick={handleSendMessage} />
-                </div>
+                )}
             </div>
         </div>
     );
