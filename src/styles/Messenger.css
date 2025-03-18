@@ -305,6 +305,7 @@
     max-height: 250px;
     overflow-y: auto;
     padding: 10px;
+    min-height: 120px;
 }
 
 .messenger-page .main-content .photoPreview-container .image-container {
