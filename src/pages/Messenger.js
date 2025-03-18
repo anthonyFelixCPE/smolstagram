@@ -363,6 +363,13 @@ function Messenger() {
                                         src={msg.message}
                                         alt="Sent Image"
                                         className="sent-image"
+                                        onClick={() => {
+                                            const newTab = window.open();
+                                            newTab.document.write(
+                                                `<img src="${msg.message}"  />`
+                                            );
+                                        }}
+                                        style={{ cursor: "pointer" }}
                                     />
                                 ) : (
                                     <p className="message-text">
