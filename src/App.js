@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Messenger from "./pages/Messenger";
 import ForgotPassword from "./pages/ForgotPassword";
+import NewPassword from "./pages/NewPassword";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/messenger" element={<Messenger />} />
                     <Route path="/forgotPassword" element={<ForgotPassword />} />
+                    <Route path="/newPassword" element={<NewPassword />} />
                 </Routes>
             </BrowserRouter>
         </div>
