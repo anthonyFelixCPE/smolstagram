@@ -98,7 +98,7 @@ function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         <button onClick={handleLogin}>Login</button>
-                        <Link className="forgot-password">
+                        <Link to="/forgotPassword" className="forgot-password">
                             Forgot your password?
                         </Link>
                         <p className="message">{message}</p>

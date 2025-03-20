@@ -71,6 +71,15 @@ function NewPassword() {
     return (
         <div className="newPassword-page">
             <div className="container">
+                <button
+                    className="back-button"
+                    onClick={() =>
+                        navigate(fromProfile ? "/profile" : "/login")
+                    }
+                >
+                    Back
+                </button>
+
                 <h2>Create a new password</h2>
                 <p>Choose a strong password to keep your account secure.</p>
 
