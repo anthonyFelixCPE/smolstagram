@@ -59,7 +59,7 @@ export default function Signup() {
             );
 
             // Default profile picture URL (Replace with a direct link)
-            const defaultProfilePicture = "https://i.imgur.com/LBqsLCj.jpg";
+            const defaultProfilePicture = "https://i.imgur.com/GvsgVco.jpeg";
 
             // Wait for email verification before storing in Firestore
             const checkEmailVerified = setInterval(async () => {
