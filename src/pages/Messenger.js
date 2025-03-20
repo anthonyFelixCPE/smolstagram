@@ -236,7 +236,15 @@ function Messenger() {
                         className="dropdown"
                         style={{ display: isDropdownOpen ? "block" : "none" }}
                     >
-                        <li>Profile</li>
+                        <li
+                            onClick={() =>
+                                navigate("/profile", {
+                                    state: { user: userData },
+                                })
+                            }
+                        >
+                            Profile
+                        </li>
                         <li
                             onClick={() =>
                                 handleLogout(userData, navigate, setUserData)

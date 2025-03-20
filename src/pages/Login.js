@@ -38,6 +38,7 @@ function Login() {
                         firstName: userData.firstName,
                         lastName: userData.lastName,
                         displayPicture: userData.displayPicture,
+                        email: user.email,
                     })
                 );
 

@@ -6,6 +6,7 @@ import Messenger from "./pages/Messenger";
 import ForgotPassword from "./pages/ForgotPassword";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
+import ProtectedRoute from "./utils/protectedRoute";
 
 function App() {
     return (
@@ -13,10 +14,27 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route index element={<Login />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
+                    <Route
+                        path="/login"
+                        element={
+                            <ProtectedRoute>
+                                <Login />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/signup"
+                        element={
+                            <ProtectedRoute>
+                                <Signup />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="/messenger" element={<Messenger />} />
-                    <Route path="/forgotPassword" element={<ForgotPassword />} />
+                    <Route
+                        path="/forgotPassword"
+                        element={<ForgotPassword />}
+                    />
                     <Route path="/newPassword" element={<NewPassword />} />
                     <Route path="/profile" element={<Profile />} />
                 </Routes>
