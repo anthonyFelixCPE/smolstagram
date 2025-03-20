@@ -7,6 +7,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./utils/protectedRoute";
+import RedirectNoLogin from "./utils/redirectNoLogin";
 
 function App() {
     return (
@@ -35,8 +36,22 @@ function App() {
                         path="/forgotPassword"
                         element={<ForgotPassword />}
                     />
-                    <Route path="/newPassword" element={<NewPassword />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route
+                        path="/newPassword"
+                        element={
+                            <RedirectNoLogin>
+                                <NewPassword />
+                            </RedirectNoLogin>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <RedirectNoLogin>
+                                <Profile />
+                            </RedirectNoLogin>
+                        }
+                    />
                 </Routes>
             </BrowserRouter>
         </div>
