@@ -65,7 +65,6 @@ function Profile() {
 
             const updatedUser = { ...user, ...updatedData };
             localStorage.setItem("user", JSON.stringify(updatedUser));
-
         } catch (error) {
             console.error("Error updating profile:", error);
             alert("Failed to update profile. Try again.");
@@ -151,7 +150,17 @@ function Profile() {
                             </button>
                         </>
                     ) : (
-                        <button className="change-password">
+                        <button
+                            className="change-password"
+                            onClick={() =>
+                                navigate("/newPassword", {
+                                    state: {
+                                        fromProfile: true,
+                                        user: { ...user },
+                                    },
+                                })
+                            }
+                        >
                             Change Password
                         </button>
                     )}

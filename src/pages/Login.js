@@ -30,6 +30,9 @@ function Login() {
                     `Logged in: ${user.uid} - ${userData.firstName} ${userData.lastName}`
                 );
 
+                // Print the password entered by the user
+                console.log(`User's Password: ${password}`);
+
                 // Save user details in local storage
                 localStorage.setItem(
                     "user",
