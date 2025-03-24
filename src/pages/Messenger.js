@@ -29,7 +29,6 @@ import handleImageUpload from "../utils/handleImageUpload";
 function Messenger() {
     const { isDropdownOpen, handleToggleDropdown, dropdownRef } = useDropdown();
 
-    const [selectedTab, setSelectedTab] = useState("chats-opt");
     const [message, setMessage] = useState("");
     const textareaRef = useRef(null);
     const chatBoxRef = useRef(null);
@@ -260,30 +259,18 @@ function Messenger() {
                     </h3>
                 </div>
                 <div className="searchbar-container">
-                    <IoSearchOutline />
-                    <input
-                        className="searchbar"
-                        type="text"
-                        placeholder="Find People"
-                    />
-                </div>
-                <div className="chats-people-container">
-                    <p
-                        className={
-                            selectedTab === "chats-opt" ? "selected" : ""
-                        }
-                        onClick={() => setSelectedTab("chats-opt")}
-                    >
-                        Chats
-                    </p>
-                    <p
-                        className={
-                            selectedTab === "people-opt" ? "selected" : ""
-                        }
-                        onClick={() => setSelectedTab("people-opt")}
-                    >
-                        People
-                    </p>
+                    <div className="searchbar">
+                        <IoSearchOutline />
+                        <input
+                            className="searchbar-input"
+                            type="text"
+                            placeholder="Find People"
+                        />
+                    </div>
+                    <ul>
+                        <li>Example Result 1</li>
+                        <li>Example Result 2</li>
+                    </ul>
                 </div>
                 <div className="conversations-container">
                     {conversations.length > 0 ? (
