@@ -19,6 +19,7 @@ import {
     addDoc,
     serverTimestamp,
     updateDoc,
+    deleteDoc,
 } from "firebase/firestore";
 import useDropdown from "../utils/useDropdown";
 import useAutoScroll from "../utils/useAutoScroll";
@@ -46,6 +47,125 @@ function Messenger() {
     useAutoResizeTextarea(textareaRef, message);
 
     const [selectedImages, setSelectedImages] = useState([]);
+
+    const [searchInput, setSearchInput] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+
+    const handleConversationClick = async (newConversationId) => {
+        if (!selectedConversation) {
+            setSelectedConversation(newConversationId);
+            return;
+        }
+
+        try {
+            const messagesRef = collection(
+                db,
+                `conversations/${selectedConversation}/messages`
+            );
+            const messagesSnapshot = await getDocs(messagesRef);
+
+            if (messagesSnapshot.empty) {
+                // If the conversation has no messages, delete it
+                await deleteDoc(doc(db, "conversations", selectedConversation));
+                console.log(
+                    `Deleted empty conversation: ${selectedConversation}`
+                );
+            }
+
+            // Set the new conversation
+            setSelectedConversation(newConversationId);
+        } catch (error) {
+            console.error("Error handling conversation switch:", error);
+        }
+    };
+
+    const handleSearchResultClick = async (selectedUser) => {
+        if (!userData) return;
+
+        const userUID = userData.uid;
+        const otherUID = selectedUser.id;
+
+        try {
+            // Check if a conversation already exists
+            const conversationsRef = collection(db, "conversations");
+            const q = query(
+                conversationsRef,
+                where("participants", "array-contains", userUID)
+            );
+
+            const querySnapshot = await getDocs(q);
+            let existingConversation = null;
+
+            querySnapshot.forEach((docSnap) => {
+                const conversationData = docSnap.data();
+                if (conversationData.participants.includes(otherUID)) {
+                    existingConversation = { id: docSnap.id };
+                }
+            });
+
+            if (existingConversation) {
+                // If a conversation exists, select it
+                setSelectedConversation(existingConversation.id);
+            } else {
+                // If no conversation exists, create a new one
+                const newConversationRef = await addDoc(conversationsRef, {
+                    participants: [userUID, otherUID],
+                    lastMessage: "",
+                    lastMessageSender: "",
+                    lastMessageTimestamp: serverTimestamp(),
+                });
+
+                setSelectedConversation(newConversationRef.id);
+            }
+        } catch (error) {
+            console.error("Error selecting conversation:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (searchInput.trim() === "") {
+            setSearchResults([]);
+            return;
+        }
+
+        const fetchUsers = async () => {
+            try {
+                const usersRef = collection(db, "users");
+                const querySnapshot = await getDocs(usersRef);
+                let filteredUsers = [];
+
+                querySnapshot.forEach((doc) => {
+                    const user = doc.data();
+                    const fullName = `${user.firstName} ${user.lastName}`;
+
+                    if (
+                        user.firstName
+                            .toLowerCase()
+                            .includes(searchInput.toLowerCase()) ||
+                        user.lastName
+                            .toLowerCase()
+                            .includes(searchInput.toLowerCase()) ||
+                        fullName
+                            .toLowerCase()
+                            .includes(searchInput.toLowerCase())
+                    ) {
+                        filteredUsers.push({
+                            id: doc.id,
+                            name: fullName,
+                            displayPicture:
+                                user.displayPicture || DisplayPicture,
+                        });
+                    }
+                });
+
+                setSearchResults(filteredUsers);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        fetchUsers();
+    }, [searchInput]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -265,12 +385,34 @@ function Messenger() {
                             className="searchbar-input"
                             type="text"
                             placeholder="Find People"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onBlur={() =>
+                                setTimeout(() => setSearchResults([]), 200)
+                            }
                         />
                     </div>
-                    <ul>
-                        <li>Example Result 1</li>
-                        <li>Example Result 2</li>
-                    </ul>
+                    {searchResults.length > 0 && (
+                        <ul className="searchbar-results">
+                            {searchResults.map((user) => (
+                                <li
+                                    key={user.id}
+                                    onClick={() =>
+                                        handleSearchResultClick(user)
+                                    }
+                                >
+                                    <div className="dp-container">
+                                        <img
+                                            src={user.displayPicture}
+                                            alt="Profile"
+                                            className="search-dp"
+                                        />
+                                    </div>
+                                    <p>{user.name}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
                 <div className="conversations-container">
                     {conversations.length > 0 ? (
@@ -278,7 +420,7 @@ function Messenger() {
                             <div
                                 key={conv.id}
                                 className="conversation"
-                                onClick={() => setSelectedConversation(conv.id)}
+                                onClick={() => handleConversationClick(conv.id)}
                             >
                                 <div className="conversation-dp-container">
                                     <img
