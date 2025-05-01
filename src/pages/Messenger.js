@@ -79,12 +79,12 @@ function Messenger() {
         }
     };
 
-    const handleSearchResultClick = async (selectedUser) => {
+    const handleSearchResultClick = async (selectedUser ) => {
         if (!userData) return;
-
+    
         const userUID = userData.uid;
-        const otherUID = selectedUser.id;
-
+        const otherUID = selectedUser .id;
+    
         try {
             // Check if a conversation already exists
             const conversationsRef = collection(db, "conversations");
@@ -92,17 +92,17 @@ function Messenger() {
                 conversationsRef,
                 where("participants", "array-contains", userUID)
             );
-
+    
             const querySnapshot = await getDocs(q);
             let existingConversation = null;
-
+    
             querySnapshot.forEach((docSnap) => {
                 const conversationData = docSnap.data();
                 if (conversationData.participants.includes(otherUID)) {
                     existingConversation = { id: docSnap.id };
                 }
             });
-
+    
             if (existingConversation) {
                 // If a conversation exists, select it
                 setSelectedConversation(existingConversation.id);
@@ -114,7 +114,7 @@ function Messenger() {
                     lastMessageSender: "",
                     lastMessageTimestamp: serverTimestamp(),
                 });
-
+    
                 setSelectedConversation(newConversationRef.id);
             }
         } catch (error) {
